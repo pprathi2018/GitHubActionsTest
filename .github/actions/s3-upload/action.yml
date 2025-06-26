@@ -1,0 +1,21 @@
+name: 'S3 Upload'
+description: 'Upload repository content to the S3 bucket folder'
+
+inputs:
+  s3-folder-name:
+    description: 'S3 bucket folder path'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::101874681190:role/GitHubActionsTestRole
+        aws-region: us-east-1
+        role-session-name: GitHubActionsS3Upload
+    - name: Upload to S3
+      shell: bash
+      run: |
+        aws s3 cp . s3://prpranee-github-actions-test-bucket/${{ inputs.s3-folder-name }}/ --recursive --exclude ".git/*" --exclude ".github/*"
